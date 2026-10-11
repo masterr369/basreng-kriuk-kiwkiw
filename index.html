@@ -4,198 +4,377 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog - BASRENG KRIUK KIWKIW</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-    </style>
+    <style> body { font-family: 'Poppins', sans-serif; } </style>
 </head>
 <body class="bg-amber-50 text-gray-800 min-h-screen flex flex-col">
 
-    <!-- Header / Navbar -->
-    <header class="bg-red-600 text-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-3">
-            <div class="flex items-center gap-2">
-                <span class="text-3xl">🔥</span>
+    <!-- Navbar -->
+    <header class="bg-red-600 text-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center gap-2">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="showSection('catalog')">
+                <span class="text-2xl md:text-3xl">🔥</span>
                 <div>
-                    <h1 class="text-xl md:text-2xl font-bold tracking-wide">BASRENG KRIUK KIWKIW</h1>
-                    <p class="text-xs text-amber-200">Katalog Resmi & Pemesanan Online</p>
+                    <h1 id="navTitle" class="text-lg md:text-xl font-bold">BASRENG KRIUK KIWKIW</h1>
+                    <p id="navSub" class="text-xs text-amber-200">Katalog Resmi & Pemesanan Online</p>
                 </div>
             </div>
-            <div class="w-full md:w-auto flex gap-2">
-                <input type="text" id="searchInput" placeholder="Cari produk basreng..." 
-                    class="px-4 py-2 rounded-lg text-gray-800 w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-amber-300 text-sm">
+            <div class="flex items-center gap-2">
+                <button id="adminNavBtn" onclick="toggleAdminNav()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow">
+                    🔐 Login Admin
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 flex-grow">
-        <!-- Banner / Hero Section -->
-        <div class="bg-gradient-to-r from-red-500 to-amber-600 rounded-2xl p-6 md:p-10 text-white mb-8 shadow-lg flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <h2 class="text-2xl md:text-4xl font-extrabold mb-2">Renyahnya Bikin Nagih! 🤤</h2>
-                <p class="text-sm md:text-base text-amber-100 max-w-xl">
-                    Nikmati sensasi basreng gurih, pedas daun jeruk, dan bumbu melimpah khas Basreng Kriuk Kiwkiw. Pesan langsung via WhatsApp!
-                </p>
+    <!-- SECTION KATALOG PUBLIC -->
+    <main id="catalogSection" class="container mx-auto px-4 py-6 flex-grow">
+        <!-- Banner -->
+        <div class="bg-gradient-to-r from-red-500 to-amber-600 rounded-2xl p-6 text-white mb-6 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h2 id="bannerTitle" class="text-2xl md:text-3xl font-extrabold mb-1">Renyahnya Bikin Nagih! 🤤</h2>
+                <p id="bannerSub" class="text-xs md:text-sm text-amber-100 max-w-xl">Nikmati sensasi basreng gurih, pedas daun jeruk, dan bumbu melimpah khas Basreng Kriuk Kiwkiw.</p>
             </div>
-            <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20mau%20pesan%20Basreng%20Kriuk%20Kiwkiw" target="_blank" 
-               class="bg-white text-red-600 font-bold px-6 py-3 rounded-xl shadow hover:bg-amber-100 transition duration-300 text-sm md:text-base whitespace-nowrap">
+            <a id="waBtn" href="#" target="_blank" class="bg-white text-red-600 font-bold px-5 py-2.5 rounded-xl shadow hover:bg-amber-100 text-xs md:text-sm whitespace-nowrap">
                 💬 Hubungi Admin / WA
             </a>
         </div>
 
-        <!-- Filter Kategori -->
-        <div class="flex flex-wrap gap-2 mb-8 justify-center" id="categoryFilters">
-            <button class="cat-btn px-4 py-2 rounded-full text-sm font-semibold bg-red-600 text-white shadow transition" data-category="all">Semua Produk</button>
+        <!-- Filter & Search -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-6">
+            <div class="flex flex-wrap gap-2" id="categoryFilters"></div>
+            <input type="text" id="searchInput" placeholder="Cari basreng..." class="px-4 py-2 rounded-lg text-sm border focus:outline-none w-full sm:w-60 shadow-sm">
         </div>
 
-        <!-- Loading State -->
-        <div id="loading" class="text-center py-20">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent"></div>
-            <p class="mt-4 text-gray-600 font-medium">Memuat produk dari database...</p>
-        </div>
-
-        <!-- Product Grid -->
-        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hidden">
-            <!-- Produk dimuat otomatis via JavaScript -->
-        </div>
-
-        <!-- Empty State -->
-        <div id="emptyState" class="text-center py-16 hidden">
-            <p class="text-5xl mb-3">🔍</p>
-            <h3 class="text-lg font-bold text-gray-700">Produk tidak ditemukan</h3>
-            <p class="text-sm text-gray-500">Coba kata kunci atau kategori lain.</p>
-        </div>
+        <!-- Loading & Grid -->
+        <div id="loading" class="text-center py-16"><div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-red-600 border-t-transparent"></div></div>
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 hidden"></div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-6 text-center text-xs md:text-sm">
-        <p>&copy; 2026 BASRENG KRIUK KIWKIW. All Rights Reserved. Powered by Google Sheets & GitHub Pages.</p>
+    <!-- SECTION LOGIN ADMIN -->
+    <section id="loginSection" class="container mx-auto px-4 py-12 flex-grow hidden max-w-md">
+        <div class="bg-white p-6 rounded-2xl shadow-xl border">
+            <h2 class="text-xl font-bold text-center text-red-600 mb-4">Login Admin</h2>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs font-semibold">Username</label>
+                    <input type="text" id="loginUser" required class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-500">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold">Password</label>
+                    <input type="password" id="loginPass" required class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-red-500">
+                </div>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg text-sm shadow">Login</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- SECTION DASHBOARD ADMIN -->
+    <section id="adminDashboard" class="container mx-auto px-4 py-6 flex-grow hidden">
+        <div class="bg-white p-4 rounded-xl shadow mb-6 flex justify-between items-center">
+            <div>
+                <h2 class="font-bold text-lg">Dashboard Kelola Toko</h2>
+                <p class="text-xs text-gray-500">Selamat datang, <span id="adminName" class="font-semibold text-red-600">Admin</span></p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="openAddModal()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-bold">+ Tambah Produk</button>
+                <button onclick="openSettingsModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold">⚙️ Pengaturan</button>
+            </div>
+        </div>
+
+        <!-- Tabel Produk Admin -->
+        <div class="bg-white rounded-xl shadow overflow-x-auto">
+            <table class="w-full text-left text-xs text-gray-600">
+                <thead class="bg-gray-100 text-gray-700 uppercase">
+                    <tr>
+                        <th class="p-3">Gambar</th>
+                        <th class="p-3">Nama</th>
+                        <th class="p-3">Kategori</th>
+                        <th class="p-3">Harga</th>
+                        <th class="p-3">Stok</th>
+                        <th class="p-3">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="adminProductTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- MODAL TAMBAH PRODUK -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-gray-800">Tambah Produk Baru</h3>
+            <form onsubmit="saveProduct(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="font-semibold">Nama Produk</label>
+                    <input type="text" id="pName" required class="w-full p-2 border rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="font-semibold">Kategori</label>
+                        <input type="text" id="pCategory" placeholder="Original / Pedas" required class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="font-semibold">Harga (Rp)</label>
+                        <input type="number" id="pPrice" required class="w-full p-2 border rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label class="font-semibold">Stok</label>
+                    <input type="number" id="pStock" required class="w-full p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="font-semibold">URL Gambar (Direct Link / https://)</label>
+                    <input type="text" id="pImageUrl" required class="w-full p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="font-semibold">Deskripsi</label>
+                    <textarea id="pDesc" class="w-full p-2 border rounded-lg" rows="2"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 border rounded-lg">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg font-bold">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL PENGATURAN -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <h3 class="text-lg font-bold mb-4 text-gray-800">Pengaturan Toko</h3>
+            <form onsubmit="saveSettings(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="font-semibold">Nama Toko</label>
+                    <input type="text" id="sNamaToko" required class="w-full p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="font-semibold">Nomor WhatsApp (Contoh: 6281234567890)</label>
+                    <input type="text" id="sWA" required class="w-full p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="font-semibold">Judul Banner</label>
+                    <input type="text" id="sBannerTitle" required class="w-full p-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="font-semibold">Deskripsi Banner</label>
+                    <textarea id="sBannerSub" class="w-full p-2 border rounded-lg" rows="2"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 border rounded-lg">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold">Simpan Pengaturan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-gray-900 text-white py-4 text-center text-xs">
+        <p>&copy; 2026 BASRENG KRIUK KIWKIW. All Rights Reserved.</p>
     </footer>
 
-    <!-- Script JavaScript -->
     <script>
-        // GANTI URL DI BAWAH INI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVhLy5x76Fo7Sxjp2QImep-ItK9rG__FjNWuNfsN6241XiXgcAE7oL2n1_IVA0gGGO/exec";
+        // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqKGq2ktgbIjuOM92pIXJ30ugPcDV5JQlyXir8besSFUYUec51x4ppzjeqZWveiWBC/exec";
 
         let allProducts = [];
+        let currentSettings = {};
+        let currentUser = null;
 
-        async function fetchProducts() {
-            try {
-                if (APPS_SCRIPT_URL.includes("ISI_URL")) {
-                    document.getElementById('loading').innerHTML = `
-                        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 max-w-xl mx-auto rounded shadow" role="alert">
-                            <p class="font-bold">Konfigurasi Belum Selesai</p>
-                            <p class="text-sm">Harap masukkan URL Google Apps Script Anda pada variabel <code>APPS_SCRIPT_URL</code> di file script.</p>
-                        </div>`;
-                    return;
-                }
-
-                const response = await fetch(APPS_SCRIPT_URL);
-                const data = await response.json();
-                allProducts = data;
-                
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('productGrid').classList.remove('hidden');
-                
-                renderCategories(allProducts);
-                renderProducts(allProducts);
-            } catch (error) {
-                console.error("Gagal memuat data:", error);
-                document.getElementById('loading').innerHTML = `
-                    <p class="text-red-500 font-semibold">Gagal memuat data produk. Periksa kembali URL Google Apps Script Anda.</p>`;
-            }
+        async function init() {
+            await loadSettings();
+            await loadProducts();
         }
 
-        function renderCategories(products) {
-            const categories = ['all', ...new Set(products.map(p => p.category))];
-            const container = document.getElementById('categoryFilters');
-            
-            container.innerHTML = categories.map(cat => `
-                <button class="cat-btn px-4 py-2 rounded-full text-sm font-semibold ${cat === 'all' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'} shadow transition" 
-                    data-category="${cat}">
-                    ${cat === 'all' ? 'Semua Produk' : cat}
-                </button>
-            `).join('');
+        async function loadSettings() {
+            try {
+                const res = await fetch(APPS_SCRIPT_URL + "?action=getSettings");
+                const data = await res.json();
+                data.forEach(item => { currentSettings[item.key] = item.value; });
 
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.cat-btn').forEach(b => {
-                        b.classList.remove('bg-red-600', 'text-white');
-                        b.classList.add('bg-white', 'text-gray-700');
-                    });
-                    e.target.classList.remove('bg-white', 'text-gray-700');
-                    e.target.classList.add('bg-red-600', 'text-white');
-                    
-                    filterAndRender();
-                });
-            });
+                if (currentSettings.nama_toko) document.getElementById('navTitle').innerText = currentSettings.nama_toko;
+                if (currentSettings.banner_title) document.getElementById('bannerTitle').innerText = currentSettings.banner_title;
+                if (currentSettings.banner_sub) document.getElementById('bannerSub').innerText = currentSettings.banner_sub;
+                
+                const waNum = currentSettings.whatsapp || "6281234567890";
+                document.getElementById('waBtn').href = `https://wa.me/${waNum}?text=Halo%20admin%20${encodeURIComponent(currentSettings.nama_toko || 'Basreng')}`;
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(APPS_SCRIPT_URL);
+                allProducts = await res.json();
+                document.getElementById('loading').classList.add('hidden');
+                renderProducts(allProducts);
+                renderCategories(allProducts);
+            } catch (err) { console.error(err); }
         }
 
         function renderProducts(products) {
             const grid = document.getElementById('productGrid');
-            const emptyState = document.getElementById('emptyState');
-
-            if (products.length === 0) {
-                grid.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
             grid.classList.remove('hidden');
+            const waNum = currentSettings.whatsapp || "6281234567890";
 
             grid.innerHTML = products.map(p => {
-                const formattedPrice = Number(p.price).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
-                const waMessage = encodeURIComponent(`Halo, saya ingin memesan produk *${p.name}* (${formattedPrice}) dari katalog Basreng Kriuk Kiwkiw. Apakah stok masih ada?`);
-                const imageUrl = p.imageUrl && p.imageUrl.startsWith('http') ? p.imageUrl : 'https://images.unsplash.com/photo-1599487484170-7c9e6e4fe315?w=600';
+                const priceFormatted = Number(p.price).toLocaleString('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 });
+                const waMsg = encodeURIComponent(`Halo, saya mau pesan ${p.name} (${priceFormatted})`);
+                const img = p.imageUrl && p.imageUrl.startsWith('http') ? p.imageUrl : 'https://images.unsplash.com/photo-1599487484170-7c9e6e4fe315?w=600';
 
                 return `
-                    <div class="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between hover:shadow-xl transition duration-300 border border-amber-100">
+                    <div class="bg-white rounded-xl shadow overflow-hidden flex flex-col justify-between border">
                         <div>
-                            <div class="relative h-48 overflow-hidden bg-gray-100">
-                                <img src="${imageUrl}" alt="${p.name}" class="w-full h-full object-cover hover:scale-105 transition duration-500">
-                                <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-                                    ${p.category}
-                                </span>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-bold text-gray-800 text-base mb-1 line-clamp-1">${p.name}</h3>
-                                <p class="text-xs text-gray-500 mb-3 line-clamp-2">${p.description || 'Basreng gurih, renyah, dan lezat.'}</p>
-                                <div class="text-lg font-extrabold text-red-600 mb-1">${formattedPrice}</div>
-                                <p class="text-xs text-gray-400">Stok: <span class="font-medium text-gray-700">${p.stock || 'Tersedia'}</span></p>
+                            <img src="${img}" class="w-full h-40 object-cover">
+                            <div class="p-3">
+                                <span class="text-[10px] bg-red-100 text-red-600 font-bold px-2 py-0.5 rounded-full">${p.category}</span>
+                                <h3 class="font-bold text-sm mt-1">${p.name}</h3>
+                                <p class="text-xs text-gray-500 line-clamp-2 mt-1">${p.description || ''}</p>
+                                <p class="text-red-600 font-bold text-base mt-2">${priceFormatted}</p>
                             </div>
                         </div>
-                        <div class="p-4 pt-0">
-                            <a href="https://wa.me/6281234567890?text=${waMessage}" target="_blank"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow transition duration-300">
-                                🛒 Pesan via WA
-                            </a>
+                        <div class="p-3 pt-0">
+                            <a href="https://wa.me/${waNum}?text=${waMsg}" target="_blank" class="block text-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg text-xs">🛒 Pesan via WA</a>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function filterAndRender() {
-            const activeCatBtn = document.querySelector('.cat-btn.bg-red-600');
-            const selectedCat = activeCatBtn ? activeCatBtn.getAttribute('data-category') : 'all';
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
+        function renderCategories(products) {
+            const cats = ['all', ...new Set(products.map(p => p.category))];
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = cats.map(c => `
+                <button onclick="filterCat('${c}')" class="px-3 py-1 rounded-full text-xs font-semibold ${c === 'all' ? 'bg-red-600 text-white' : 'bg-white border text-gray-700'}">${c === 'all' ? 'Semua' : c}</button>
+            `).join('');
+        }
 
-            const filtered = allProducts.filter(p => {
-                const matchCat = selectedCat === 'all' || p.category === selectedCat;
-                const matchKey = p.name.toLowerCase().includes(keyword) || (p.description && p.description.toLowerCase().includes(keyword));
-                return matchCat && matchKey;
-            });
-
+        function filterCat(cat) {
+            const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.category === cat);
             renderProducts(filtered);
         }
 
-        document.getElementById('searchInput').addEventListener('input', filterAndRender);
+        function showSection(sec) {
+            document.getElementById('catalogSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
 
-        window.addEventListener('DOMContentLoaded', fetchProducts);
+            if (sec === 'catalog') document.getElementById('catalogSection').classList.remove('hidden');
+            if (sec === 'login') document.getElementById('loginSection').classList.remove('hidden');
+            if (sec === 'admin') document.getElementById('adminDashboard').classList.remove('hidden');
+        }
+
+        function toggleAdminNav() {
+            if (currentUser) {
+                showSection('admin');
+            } else {
+                showSection('login');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUser').value;
+            const p = document.getElementById('loginPass').value;
+
+            const res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', username: u, password: p })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentUser = data.user;
+                document.getElementById('adminName').innerText = currentUser.nama;
+                document.getElementById('adminNavBtn').innerText = "👨‍💼 Dashboard Admin";
+                showSection('admin');
+                renderAdminTable();
+            } else {
+                alert(data.message);
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminProductTable');
+            tbody.innerHTML = allProducts.map(p => `
+                <tr class="border-b">
+                    <td class="p-3"><img src="${p.imageUrl}" class="w-10 h-10 object-cover rounded"></td>
+                    <td class="p-3 font-semibold">${p.name}</td>
+                    <td class="p-3">${p.category}</td>
+                    <td class="p-3">Rp ${Number(p.price).toLocaleString()}</td>
+                    <td class="p-3">${p.stock}</td>
+                    <td class="p-3">
+                        <button onclick="deleteProduct('${p.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-[10px]">Hapus</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm("Yakin ingin menghapus produk ini?")) return;
+            const res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'deleteProduct', id: id })
+            });
+            const data = await res.json();
+            alert(data.message);
+            await loadProducts();
+            renderAdminTable();
+        }
+
+        function openAddModal() { document.getElementById('productModal').classList.remove('hidden'); }
+        function closeAddModal() { document.getElementById('productModal').classList.add('hidden'); }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const prod = {
+                name: document.getElementById('pName').value,
+                category: document.getElementById('pCategory').value,
+                price: document.getElementById('pPrice').value,
+                stock: document.getElementById('pStock').value,
+                imageUrl: document.getElementById('pImageUrl').value,
+                description: document.getElementById('pDesc').value
+            };
+
+            const res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'addProduct', product: prod })
+            });
+            const data = await res.json();
+            alert(data.message);
+            closeAddModal();
+            await loadProducts();
+            renderAdminTable();
+        }
+
+        function openSettingsModal() {
+            document.getElementById('sNamaToko').value = currentSettings.nama_toko || '';
+            document.getElementById('sWA').value = currentSettings.whatsapp || '';
+            document.getElementById('sBannerTitle').value = currentSettings.banner_title || '';
+            document.getElementById('sBannerSub').value = currentSettings.banner_sub || '';
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+        async function saveSettings(e) {
+            e.preventDefault();
+            const settings = {
+                nama_toko: document.getElementById('sNamaToko').value,
+                whatsapp: document.getElementById('sWA').value,
+                banner_title: document.getElementById('sBannerTitle').value,
+                banner_sub: document.getElementById('sBannerSub').value
+            };
+
+            const res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'updateSettings', settings: settings })
+            });
+            const data = await res.json();
+            alert(data.message);
+            closeSettingsModal();
+            await loadSettings();
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
